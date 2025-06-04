@@ -116,7 +116,7 @@ const postApi = async () => {
       body: JSON.stringify({ name: inputName.value, breed: inputBreed.value, status: inputStatus.value, imageUrl: inputImage.value })
     });
     const newPlayer = await response.json();
-    state.names.push(newPlayer);
+    state.names.push(newPlayer.data.newPlayer);
     render();
   }
   catch (e) {
