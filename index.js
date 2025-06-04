@@ -35,7 +35,7 @@ const h3select = document.querySelector('#h3select');
 
 const state = {
   names: [],
-};
+}
 
 const getting = async () => {
   try {
@@ -67,7 +67,7 @@ const render = () => {
 }
 
 const detailsRendering = (obj) => {
-  let { name, id, breed, status, imageUrl, teamId = "unassigned" } = obj;
+  const { name, id, breed, status, imageUrl, teamId = "unassigned" } = obj;
   h3select.remove();
   details.innerHTML = `
     <li><img id = "clicked-img" src = ${imageUrl} alt = ${name}</li>
@@ -81,21 +81,21 @@ const detailsRendering = (obj) => {
   const removeButton = document.querySelector('#remove');
   removeButton.addEventListener('click', (event) => {
     //event.preventDefault();
-    removeApi(id);
+    removeApi(id, obj);
   });
 }
 
 
 
-const removeApi = async (idNum) => {
+const removeApi = async (idNum, obj) => {
   try {
     const response = await fetch(`${API}/players/${idNum}`, { method: 'DELETE' });
-    const deletedPlayer = await response.json();
-    console.log(deletedPlayer);
-    // state.names = state.names.filter(elem => {
-    //   if (!elem) continue;
-    // });
+    console.log(obj);
+    state.names = state.names.filter(elem => {
+      return obj !== elem;
+    });
     render();
+    details.innerHTML = `${obj.name} PLAYER REMOVED`;
   }
   catch (e) {
     console.error(e);
@@ -115,9 +115,8 @@ const postApi = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: inputName.value, breed: inputBreed.value, status: inputStatus.value, imageUrl: inputImage.value })
     });
-    const x = await response.json();
-    state.names.push(inputName.value);
-
+    const newPlayer = await response.json();
+    state.names.push(newPlayer);
     render();
   }
   catch (e) {
@@ -126,3 +125,5 @@ const postApi = async () => {
 }
 
 getting();
+
+
