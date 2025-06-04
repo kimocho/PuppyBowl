@@ -51,6 +51,7 @@ const getting = async () => {
 }
 
 const render = () => {
+  names.innerHTML = '';
   state.names.forEach(obj => {
     const li = document.createElement('li');
     const image = document.createElement('img');
@@ -89,7 +90,12 @@ const detailsRendering = (obj) => {
 const removeApi = async (idNum) => {
   try {
     const response = await fetch(`${API}/players/${idNum}`, { method: 'DELETE' });
-    const x = await response.json();
+    const deletedPlayer = await response.json();
+    console.log(deletedPlayer);
+    // state.names = state.names.filter(elem => {
+    //   if (!elem) continue;
+    // });
+    render();
   }
   catch (e) {
     console.error(e);
@@ -103,17 +109,16 @@ postPupButton.addEventListener('click', (event) => {
 });
 
 const postApi = async () => {
-  const inputNameValue = inputName.value;
-  const inputBreedValue = inputBreed.value;
-  const inputImageValue = inputImage.value;
-  const inputStatusValue = inputStatus.value;
   try {
     const response = await fetch(`${API}/players`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: inputNameValue, breed: inputBreedValue, status: inputStatusValue, imageUrl: inputImageValue })
+      body: JSON.stringify({ name: inputName.value, breed: inputBreed.value, status: inputStatus.value, imageUrl: inputImage.value })
     });
     const x = await response.json();
+    state.names.push(inputName.value);
+
+    render();
   }
   catch (e) {
     console.error(e);
