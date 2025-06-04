@@ -1,0 +1,39 @@
+#names>li {
+  list-style-type: none;
+  border: 1px dotted black;
+  padding: 5px;
+  margin: 2px;
+  display: flex;
+  align-items: center;
+}
+
+#names>li:active {
+  border: 1px solid black;
+}
+
+img {
+  height: 50px;
+  width: 50px;
+  margin-right: 5px;
+}
+
+main {
+  display: flex;
+}
+
+#clicked-img {
+  height: 150px;
+  width: 150px;
+}
+
+#details {
+  list-style-type: none;
+}
+
+aside>h3 {
+  text-align: center;
+}
+
+#names {
+  padding: 0px;
+}

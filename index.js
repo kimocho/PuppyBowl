@@ -1,4 +1,104 @@
 // === Constants ===
 const BASE = "https://fsa-puppy-bowl.herokuapp.com/api";
-const COHORT = "/"; // Make sure to change this!
+const COHORT = "/2505-sam"; // Make sure to change this!
 const API = BASE + COHORT;
+
+const div = document.querySelector('#app');
+div.innerHTML = `
+  <h1>Puppy Bowl</h1>
+  <main>
+  <section>
+  <ul id="names"></ul>
+  <h3>Invite a puppy</h3>
+  <form>
+    <label>Name</label><input id="name" /><br>
+    <label>Breed</label><input id="breed"/>
+    <button id="invitepup">Invite puppy</button>
+  </form>
+  </section>
+  <aside>
+  <h3 id="h3select">Select a Player</h3>
+  <ul id="details"></ul>
+  </aside>
+  </main>
+`;
+const names = document.querySelector('#names');
+const details = document.querySelector('#details');
+const inputName = document.querySelector('#name');
+const inputBreed = document.querySelector('#breed');
+const postPupButton = document.querySelector('#invitepup');
+const h3select = document.querySelector('h3select');
+
+const state = {
+  names: [],
+};
+
+const getting = async () => {
+  const response = await fetch(`${API}/players`);
+  const responseJson = await response.json();
+  const players = responseJson.data.players;
+  state.names = players;
+  render();
+  console.log(players);
+}
+
+const render = () => {
+  state.names.forEach(obj => {
+    const li = document.createElement('li');
+    const image = document.createElement('img');
+    image.setAttribute('src', obj.imageUrl);
+    image.setAttribute('alt', obj.name);
+    li.append(image, obj.name);
+    names.appendChild(li);
+    li.addEventListener('click', (event) => {
+      event.preventDefault();
+      detailsRendering(obj);
+    });
+  });
+}
+
+const detailsRendering = (obj) => {
+  const { name, id, breed, status, imageUrl, teamId = "unassigned" } = obj;
+  //h3select.remove();
+  details.innerHTML = `
+    <li><img id = "clicked-img" src = ${imageUrl} alt = ${name}</li>
+    <li>Name: ${name}</li>
+    <li>ID: ${id}</li>
+    <li>Breed: ${breed}</li>
+    <li>Team ID: ${teamId}</li>
+    <li>Status: ${status}</li>
+    <button>Remove from roster</button>
+  `;
+  const removeButton = document.querySelector('button');
+  removeButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    removeApi(id);
+  });
+}
+
+
+
+const removeApi = async (idNum) => {
+  const response = await fetch(`${API}/players/${idNum}`, { method: 'DELETE' });
+  const x = await response.json();
+}
+
+
+postPupButton.addEventListener('click', (event) => {
+  event.preventDefault();
+  postApi();
+});
+
+const postApi = async () => {
+  const inputNameValue = inputName.value;
+  const inputBreedValue = inputBreed.value;
+  console.log(inputNameValue, inputBreedValue);
+  const response = await fetch(`${API}/players`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: inputNameValue, breed: inputBreedValue })
+  });
+  const x = await response.json();
+}
+
+getting();
