@@ -11,8 +11,10 @@ div.innerHTML = `
   <ul id="names"></ul>
   <h3>Invite a puppy</h3>
   <form>
-    <label>Name</label><input id="name" /><br>
-    <label>Breed</label><input id="breed"/>
+    <label>Name</label><br><input id="name" placeholder = "required" required/><br>
+    <label>Breed</label><br><input id="breed" placeholder = "required" required/><br>
+    <label>Status</label><br><select id="select"><option>bench</option><option>field</option></select><br>
+    <label>Image URL</label><br><input id="imageinput"/><br>
     <button id="invitepup">Invite puppy</button>
   </form>
   </section>
@@ -26,20 +28,26 @@ const names = document.querySelector('#names');
 const details = document.querySelector('#details');
 const inputName = document.querySelector('#name');
 const inputBreed = document.querySelector('#breed');
+const inputStatus = document.querySelector('#select');
+const inputImage = document.querySelector('#imageinput');
 const postPupButton = document.querySelector('#invitepup');
-const h3select = document.querySelector('h3select');
+const h3select = document.querySelector('#h3select');
 
 const state = {
   names: [],
 };
 
 const getting = async () => {
-  const response = await fetch(`${API}/players`);
-  const responseJson = await response.json();
-  const players = responseJson.data.players;
-  state.names = players;
-  render();
-  console.log(players);
+  try {
+    const response = await fetch(`${API}/players`);
+    const responseJson = await response.json();
+    const players = responseJson.data.players;
+    state.names = players;
+    render();
+  }
+  catch (e) {
+    console.error(e);
+  }
 }
 
 const render = () => {
@@ -58,8 +66,8 @@ const render = () => {
 }
 
 const detailsRendering = (obj) => {
-  const { name, id, breed, status, imageUrl, teamId = "unassigned" } = obj;
-  //h3select.remove();
+  let { name, id, breed, status, imageUrl, teamId = "unassigned" } = obj;
+  h3select.remove();
   details.innerHTML = `
     <li><img id = "clicked-img" src = ${imageUrl} alt = ${name}</li>
     <li>Name: ${name}</li>
@@ -67,11 +75,11 @@ const detailsRendering = (obj) => {
     <li>Breed: ${breed}</li>
     <li>Team ID: ${teamId}</li>
     <li>Status: ${status}</li>
-    <button>Remove from roster</button>
+    <button id="remove">Remove from roster</button>
   `;
-  const removeButton = document.querySelector('button');
+  const removeButton = document.querySelector('#remove');
   removeButton.addEventListener('click', (event) => {
-    event.preventDefault();
+    //event.preventDefault();
     removeApi(id);
   });
 }
@@ -79,8 +87,13 @@ const detailsRendering = (obj) => {
 
 
 const removeApi = async (idNum) => {
-  const response = await fetch(`${API}/players/${idNum}`, { method: 'DELETE' });
-  const x = await response.json();
+  try {
+    const response = await fetch(`${API}/players/${idNum}`, { method: 'DELETE' });
+    const x = await response.json();
+  }
+  catch (e) {
+    console.error(e);
+  }
 }
 
 
@@ -92,13 +105,19 @@ postPupButton.addEventListener('click', (event) => {
 const postApi = async () => {
   const inputNameValue = inputName.value;
   const inputBreedValue = inputBreed.value;
-  console.log(inputNameValue, inputBreedValue);
-  const response = await fetch(`${API}/players`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: inputNameValue, breed: inputBreedValue })
-  });
-  const x = await response.json();
+  const inputImageValue = inputImage.value;
+  const inputStatusValue = inputStatus.value;
+  try {
+    const response = await fetch(`${API}/players`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: inputNameValue, breed: inputBreedValue, status: inputStatusValue, imageUrl: inputImageValue })
+    });
+    const x = await response.json();
+  }
+  catch (e) {
+    console.error(e);
+  }
 }
 
 getting();
